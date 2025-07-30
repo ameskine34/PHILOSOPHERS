@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   test.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ameskine <ameskine@student.1337.com>       +#+  +:+       +#+        */
+/*   By: ameskine <ameskine@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/19 09:41:45 by ameskine          #+#    #+#             */
-/*   Updated: 2025/07/21 19:41:38 by ameskine         ###   ########.fr       */
+/*   Updated: 2025/07/30 22:00:38 by ameskine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 void *my_turn(void *arg)
 {
     int i =0;
-    (void)arg;
+    (char *)arg;
     while (i < 5)
     {
         sleep(1);
-        printf("My Turn!\n");
+        printf("%s\n", arg);
         i++;
     }
     return (NULL);
@@ -28,11 +28,11 @@ void *my_turn(void *arg)
 void *my_turn1(void *arg)
 {
     int i =0;
-    (void)arg;
+    (char *)arg;
     while (i < 8)
     {
         sleep(1);
-        printf("SBE3\n");
+        printf("%s\n",arg);
         i++;
     }
     return (NULL);
@@ -43,7 +43,7 @@ void your_turn()
     int j = 0;   
     while (j < 3)
     {
-        sleep(2);
+        // sleep(2);
         printf("Your Turn!\n");
         j++;
     }
@@ -52,10 +52,11 @@ int main()
 {
     pthread_t newthread; // thread id that the function populate 
     pthread_t newthread1;
+    char *s = "amine,meskine";
     
-    pthread_create(&newthread, NULL, my_turn, NULL);
-    pthread_create(&newthread1, NULL, my_turn1, NULL);
-     your_turn();
+    pthread_create(&newthread, NULL, my_turn, s);
+    pthread_create(&newthread1, NULL, my_turn1, s);
+    your_turn();
     pthread_join(newthread, NULL);
     pthread_join(newthread1, NULL);
 }

@@ -1,7 +1,7 @@
 NAME = philo
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror
-SRC = main.c
+CFLAGS = -Wall -Wextra -Werror -g
+SRC = main.c helper_functions.c
 OBJ = $(SRC:.c=.o)
 
 all : $(NAME)
