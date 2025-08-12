@@ -6,7 +6,7 @@
 /*   By: ameskine <ameskine@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/20 14:00:26 by ameskine          #+#    #+#             */
-/*   Updated: 2025/07/30 19:18:14 by ameskine         ###   ########.fr       */
+/*   Updated: 2025/08/11 20:12:13 by ameskine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ typedef struct prog_args
     long time_to_sleep;
     long time_to_die;
     long time_to_eat;
+    long start_time;
 } t_prog_args;
 
 typedef struct thread_info
@@ -40,9 +41,10 @@ typedef struct thread_info
     t_prog_args *init;
 } t_thread_info;
 
-t_prog_args *init_p_args(int *ac, char **av, int *error);
+t_prog_args *init_p_args(int *ac, char **av);
 t_thread_info *threads_initialization(t_prog_args *init);
-long ft_atol(char *str, int *error);
+long ft_atol(char *str);
 int ft_strlen(char *str);
+long    current_time(void);
 
 #endif

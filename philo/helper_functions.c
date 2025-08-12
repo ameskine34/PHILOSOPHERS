@@ -6,7 +6,7 @@
 /*   By: ameskine <ameskine@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 09:42:15 by ameskine          #+#    #+#             */
-/*   Updated: 2025/07/30 11:13:06 by ameskine         ###   ########.fr       */
+/*   Updated: 2025/08/10 15:53:26 by ameskine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,24 +14,11 @@
 
 int ft_strlen(char *str)
 {
-    int i;
-
-    i = 0;
-    while (str[i])
-        i++;
-    return (i);
-}
-
-static long num_len(long res)
-{
-	long i;
+	int i;
 
 	i = 0;
-	while (res != 0)
-	{
-		res = res / 10;
+	while (str[i])
 		i++;
-	}
 	return (i);
 }
 
@@ -55,31 +42,37 @@ static void skip_whitespace(char *str, int *i)
 		(*i)++;
 }
 
-long ft_atol(char *str, int *error)
+int print_error(void)
+{
+	write(1, "ERROR : invalid arg\n", 20);
+	return (1);
+}
+
+long ft_atol(char *str)
 {
 	long res;
 
-	int(i), (j), (sign);
-	(1) && (i = 0, j = 0);
+	int(i), (sign), (digit), (error);
+	(1) && (i = 0, error = 0);
 	res = 0;
 	skip_whitespace(str, &i);
-	sign = get_sign(str, &i, error);
+	sign = get_sign(str, &i, &error);
 	while (str[i])
 	{
 		if (str[i] >= '0' && str[i] <= '9')
 		{
-			if (num_len(res) == 18)
-			{
-				if (sign == 1 && (res > (LLONG_MAX - (str[i] - '0')) / 10))
-					*error = 1;
-				else if (sign == -1 && (res > (LLONG_MIN + (str[i] - '0')) / 10))
-					*error = 1;
-			}
-			res = res * 10 + (str[i] - '0');
+			digit = str[i] - '0';
+			if (sign > 0 && (res > ((LLONG_MAX - digit) / 10)))
+				error = 1;
+			if (sign < 0 && (res < ((LLONG_MIN + digit) / 10)))
+				error = 1;
+			res = res * 10 + digit;
 		}
 		else
-			*error = 1;
+			error = 1;
 		i++;
 	}
+	if (error == 1)
+		print_error();
 	return ((res * sign));
 }
