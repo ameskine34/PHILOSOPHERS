@@ -6,7 +6,7 @@
 /*   By: ameskine <ameskine@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 09:42:15 by ameskine          #+#    #+#             */
-/*   Updated: 2025/08/10 15:53:26 by ameskine         ###   ########.fr       */
+/*   Updated: 2025/08/14 08:56:41 by ameskine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,6 @@ static void skip_whitespace(char *str, int *i)
 		(*i)++;
 }
 
-int print_error(void)
-{
-	write(1, "ERROR : invalid arg\n", 20);
-	return (1);
-}
-
 long ft_atol(char *str)
 {
 	long res;
@@ -73,6 +67,6 @@ long ft_atol(char *str)
 		i++;
 	}
 	if (error == 1)
-		print_error();
+		return (-1);
 	return ((res * sign));
 }
