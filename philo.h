@@ -6,7 +6,7 @@
 /*   By: ameskine <ameskine@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/20 14:00:26 by ameskine          #+#    #+#             */
-/*   Updated: 2025/08/17 00:21:48 by ameskine         ###   ########.fr       */
+/*   Updated: 2025/08/17 01:10:55 by ameskine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ typedef struct prog_args
     int dead_philo;
     int is_simuation_ended;
     pthread_mutex_t lock_check_simulation;
+    pthread_mutex_t last_meal_time_;
 } t_prog_args;
 
 typedef struct philo_info
@@ -63,7 +64,7 @@ typedef struct philo_info
 void    print_status(t_philo_info *philo, char *status);
 t_philo_info **philos_data_filling(t_prog_args *init);
 t_prog_args *init_p_args(int *ac, char **av);
-void    philo_eat(t_philo_info *philo);
+void    philo_eating(t_philo_info *philo);
 long    current_time(void);
 int ft_strlen(char *str);
 long ft_atol(char *str);
