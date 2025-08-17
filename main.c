@@ -6,7 +6,7 @@
 /*   By: ameskine <ameskine@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/20 23:40:43 by ameskine          #+#    #+#             */
-/*   Updated: 2025/08/17 21:56:44 by ameskine         ###   ########.fr       */
+/*   Updated: 2025/08/17 23:13:05 by ameskine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ t_philo_info **philos_data_filling(t_prog_args *init)
 
 t_prog_args *init_p_args(int *ac, char **av)
 {
-    t_prog_args *init;
+    t_prog_args *init; 
     int i;
 
     init = malloc(sizeof(t_prog_args));
