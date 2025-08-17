@@ -6,7 +6,7 @@
 /*   By: ameskine <ameskine@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/20 23:40:43 by ameskine          #+#    #+#             */
-/*   Updated: 2025/08/18 00:29:10 by ameskine         ###   ########.fr       */
+/*   Updated: 2025/08/18 00:56:36 by ameskine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,7 @@ t_philo_info	**philos_data_filling(t_prog_args *init)
 		}
 		j++;
 	}
-	philo_infos[j] = NULL;
-	return (philo_infos);
+	return (philo_infos[j] = NULL, philo_infos);
 }
 
 void	*init_p_args_continue(int *ac, char **av, t_prog_args *init, int i)
@@ -71,12 +70,14 @@ void	*init_p_args_continue(int *ac, char **av, t_prog_args *init, int i)
 		init->n_to_eat = -1;
 	init->is_simuation_ended = 0;
 	pthread_mutex_init(&init->lock_check_simulation, NULL);
-	if ((init->fork_ = malloc((init->number_of_philosophers + 1)
-				* sizeof(t_forks *))) == NULL)
+	init->fork_ = malloc((init->number_of_philosophers + 1)
+			* sizeof(t_forks *));
+	if (init->fork_ == NULL)
 		return (free(init), NULL);
 	while (i < init->number_of_philosophers)
 	{
-		if ((init->fork_[i] = malloc(sizeof(t_forks))) == NULL)
+		init->fork_[i] = malloc(sizeof(t_forks));
+		if (init->fork_[i] == NULL)
 			return (free(init->fork_), NULL);
 		pthread_mutex_init(&init->fork_[i]->fork, NULL);
 		i++;
@@ -97,15 +98,18 @@ t_prog_args	*init_p_args(int *ac, char **av)
 	init->dead_philo = 0;
 	pthread_mutex_init(&init->meal_eaten, NULL);
 	pthread_mutex_init(&init->last_meal_time_, NULL);
-	if ((init->number_of_philosophers = ft_atol(av[1])) == -1
+	init->number_of_philosophers = ft_atol(av[1]);
+	if ((init->number_of_philosophers == -1)
 		|| (init->number_of_philosophers == 0))
 		return (free(init), NULL);
-	if ((init->time_to_sleep = ft_atol(av[4])) == -1
-		|| (init->time_to_sleep == 0))
+	init->time_to_sleep = ft_atol(av[4]);
+	if ((init->time_to_sleep == -1) || (init->time_to_sleep == 0))
 		return (free(init), NULL);
-	if ((init->time_to_die = ft_atol(av[2])) == -1 || (init->time_to_die == 0))
+	init->time_to_die = ft_atol(av[2]);
+	if ((init->time_to_die == -1) || (init->time_to_die == 0))
 		return (free(init), NULL);
-	if ((init->time_to_eat = ft_atol(av[3])) == -1 || (init->time_to_eat == 0))
+	init->time_to_eat = ft_atol(av[3]);
+	if ((init->time_to_eat == -1) || (init->time_to_eat == 0))
 		return (free(init), NULL);
 	init_ = init_p_args_continue(ac, av, init, 0);
 	return (init_);
@@ -178,8 +182,8 @@ void	*routine_monitor(t_prog_args *data)
 	return_ = NULL;
 	while (!is_simulation_end(data))
 	{
-		i = 0;
-		while (i < data->number_of_philosophers)
+		i = -1;
+		while (++i < data->number_of_philosophers)
 		{
 			pthread_mutex_lock(&data->last_meal_time_);
 			if ((current_time()
@@ -193,7 +197,6 @@ void	*routine_monitor(t_prog_args *data)
 				return (NULL);
 			}
 			pthread_mutex_unlock(&data->last_meal_time_);
-			i++;
 		}
 		return_ = routine_monitor_continue(data, 0, 1);
 	}
