@@ -6,7 +6,7 @@
 /*   By: ameskine <ameskine@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/20 23:40:43 by ameskine          #+#    #+#             */
-/*   Updated: 2025/08/17 17:07:39 by ameskine         ###   ########.fr       */
+/*   Updated: 2025/08/17 21:56:44 by ameskine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ t_philo_info **philos_data_filling(t_prog_args *init)
         philo_infos[j]->philo_num = j + 1;
         philo_infos[j]->init = init;
         philo_infos[j]->meals_eaten = 0;
-        //  pthread_mutex_init(&init->meal_eaten, NULL);
         philo_infos[j]->last_meal_time = init->start_time;
         philo_infos[j]->right_fork = j;
         philo_infos[j]->left_fork = (j + 1) % init->number_of_philosophers;
@@ -110,7 +109,10 @@ void philo_eating(t_philo_info *philo)
     philo->last_meal_time = current_time();
     pthread_mutex_unlock(&philo->init->last_meal_time_);    
     print_status(philo, "is eating");
-    usleep(philo->init->time_to_eat * 1000);
+    if (philo->init->time_to_eat >= philo->init->time_to_die)
+        usleep(philo->init->time_to_die * 1000);
+    else 
+        usleep(philo->init->time_to_eat * 1000);
     pthread_mutex_lock(&philo->init->meal_eaten);
     philo->meals_eaten++;
     pthread_mutex_unlock(&philo->init->meal_eaten);
@@ -174,7 +176,7 @@ void *routine_monitor(t_prog_args *data)
                 return (NULL);
             }
         }
-        usleep(100);
+        usleep(50);
     }
     return (NULL);
 }
@@ -188,9 +190,18 @@ void *start_routine(void *arg)
         usleep(1000);
     while (!is_simulation_end(philo->init))
     {
+        if (philo->init->number_of_philosophers == 1)
+        {
+            printf("%ld %d has taken a fork\n", current_time() - philo->init->start_time, philo->philo_num);
+            usleep(philo->init->time_to_die * 1000);
+            return (NULL);
+        }
         philo_eating(philo);
         print_status(philo, "is sleeping");
-        usleep(philo->init->time_to_sleep * 1000);
+        if (philo->init->time_to_sleep >= philo->init->time_to_die)
+            usleep(philo->init->time_to_die * 1000);            
+        else
+            usleep(philo->init->time_to_sleep * 1000);
         print_status(philo, "is thinking");
         if ((philo->init->number_of_philosophers % 2 != 0) && (philo->philo_num % 2 != 0))
         {
