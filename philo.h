@@ -6,7 +6,7 @@
 /*   By: ameskine <ameskine@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/20 14:00:26 by ameskine          #+#    #+#             */
-/*   Updated: 2025/08/17 01:10:55 by ameskine         ###   ########.fr       */
+/*   Updated: 2025/08/17 16:41:43 by ameskine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ typedef struct prog_args
     int is_simuation_ended;
     pthread_mutex_t lock_check_simulation;
     pthread_mutex_t last_meal_time_;
+    pthread_mutex_t meal_eaten;
 } t_prog_args;
 
 typedef struct philo_info

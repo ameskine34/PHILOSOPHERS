@@ -6,7 +6,7 @@
 /*   By: ameskine <ameskine@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/20 23:40:43 by ameskine          #+#    #+#             */
-/*   Updated: 2025/08/17 01:35:15 by ameskine         ###   ########.fr       */
+/*   Updated: 2025/08/17 17:07:39 by ameskine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ t_philo_info **philos_data_filling(t_prog_args *init)
         philo_infos[j]->philo_num = j + 1;
         philo_infos[j]->init = init;
         philo_infos[j]->meals_eaten = 0;
+        //  pthread_mutex_init(&init->meal_eaten, NULL);
         philo_infos[j]->last_meal_time = init->start_time;
         philo_infos[j]->right_fork = j;
         philo_infos[j]->left_fork = (j + 1) % init->number_of_philosophers;
@@ -66,6 +67,7 @@ t_prog_args *init_p_args(int *ac, char **av)
         return (NULL);
     init->start_time = current_time();
     init->dead_philo = 0;
+    pthread_mutex_init(&init->meal_eaten, NULL);
     pthread_mutex_init(&init->last_meal_time_, NULL);
     if ((init->number_of_philosophers = ft_atol(av[1])) == -1 || (init->number_of_philosophers == 0))
         return (free(init),NULL);
@@ -80,6 +82,8 @@ t_prog_args *init_p_args(int *ac, char **av)
         if((init->num_times_to_eat = ft_atol(av[5])) == -1 || (init->num_times_to_eat == 0 ))
         return (free(init),NULL);
     }
+    else
+        init->num_times_to_eat = -1;
     init->is_simuation_ended = 0;
     pthread_mutex_init(&init->lock_check_simulation, NULL);
     i = 0;
@@ -107,7 +111,9 @@ void philo_eating(t_philo_info *philo)
     pthread_mutex_unlock(&philo->init->last_meal_time_);    
     print_status(philo, "is eating");
     usleep(philo->init->time_to_eat * 1000);
+    pthread_mutex_lock(&philo->init->meal_eaten);
     philo->meals_eaten++;
+    pthread_mutex_unlock(&philo->init->meal_eaten);
     pthread_mutex_unlock(&philo->init->fork_[philo->right_fork]->fork);
     pthread_mutex_unlock(&philo->init->fork_[philo->left_fork]->fork);
 }
@@ -123,6 +129,7 @@ int is_simulation_end(t_prog_args *data)
 
 void *routine_monitor(t_prog_args *data)
 {
+    int all_eaten;
     int i;
 
     while (!is_simulation_end(data))
@@ -143,7 +150,31 @@ void *routine_monitor(t_prog_args *data)
             pthread_mutex_unlock(&data->last_meal_time_);
             i++;
         }
-        usleep(500);
+        i = 0;
+        all_eaten = 1;
+        if (data->num_times_to_eat != -1)
+        {
+            while (i < data->number_of_philosophers)
+            {
+                pthread_mutex_lock(&data->meal_eaten);
+                if (data->philos[i]->meals_eaten < data->num_times_to_eat)
+                {
+                    all_eaten = 0;
+                    pthread_mutex_unlock(&data->meal_eaten);
+                    break;
+                }
+                pthread_mutex_unlock(&data->meal_eaten);
+                i++;
+            }
+            if (all_eaten)
+            {
+                pthread_mutex_lock(&data->lock_check_simulation);
+                data->is_simuation_ended = 1;
+                pthread_mutex_unlock(&data->lock_check_simulation);
+                return (NULL);
+            }
+        }
+        usleep(100);
     }
     return (NULL);
 }
