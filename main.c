@@ -6,7 +6,7 @@
 /*   By: ameskine <ameskine@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/20 23:40:43 by ameskine          #+#    #+#             */
-/*   Updated: 2025/08/17 23:13:05 by ameskine         ###   ########.fr       */
+/*   Updated: 2025/08/17 23:33:26 by ameskine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,10 +56,34 @@ t_philo_info **philos_data_filling(t_prog_args *init)
     return (philo_infos);
 }
 
+void *init_p_args_continue(int *ac, char **av, t_prog_args *init, int i)
+{
+    if (*ac == 6)
+    {
+        if((init->num_times_to_eat = ft_atol(av[5])) == -1 || (init->num_times_to_eat == 0 ))
+        return (free(init),NULL);
+    }
+    else
+        init->num_times_to_eat = -1;
+    init->is_simuation_ended = 0;
+    pthread_mutex_init(&init->lock_check_simulation, NULL);
+    if ((init->fork_ = malloc((init->number_of_philosophers + 1) * sizeof(t_forks *))) == NULL)
+        return (free(init), NULL);
+    while (i < init->number_of_philosophers)
+    {
+        if ((init->fork_[i] = malloc(sizeof(t_forks))) == NULL)
+            return (free(init->fork_), NULL);
+        pthread_mutex_init(&init->fork_[i]->fork, NULL);
+        i++;
+    }
+    init->fork_[i] = NULL;
+    return (init);
+}
+
 t_prog_args *init_p_args(int *ac, char **av)
 {
-    t_prog_args *init; 
-    int i;
+    t_prog_args *init;
+    t_prog_args *init_;
 
     init = malloc(sizeof(t_prog_args));
     if (!init)
@@ -76,27 +100,8 @@ t_prog_args *init_p_args(int *ac, char **av)
         return (free(init),NULL);
     if ((init->time_to_eat = ft_atol(av[3])) == -1 || (init->time_to_eat == 0 ))
         return (free(init),NULL);
-    if (*ac == 6)
-    {
-        if((init->num_times_to_eat = ft_atol(av[5])) == -1 || (init->num_times_to_eat == 0 ))
-        return (free(init),NULL);
-    }
-    else
-        init->num_times_to_eat = -1;
-    init->is_simuation_ended = 0;
-    pthread_mutex_init(&init->lock_check_simulation, NULL);
-    i = 0;
-    if ((init->fork_ = malloc((init->number_of_philosophers + 1) * sizeof(t_forks *))) == NULL)
-        return (free(init), NULL);
-    while (i < init->number_of_philosophers)
-    {
-        if ((init->fork_[i] = malloc(sizeof(t_forks))) == NULL)
-            return (free(init->fork_), NULL);
-        pthread_mutex_init(&init->fork_[i]->fork, NULL);
-        i++;
-    }
-    init->fork_[i] = NULL;
-    return (init);
+    init_ = init_p_args_continue(ac, av, init, 0);
+    return (init_);
 }
 
 void philo_eating(t_philo_info *philo)
@@ -129,11 +134,40 @@ int is_simulation_end(t_prog_args *data)
     return (value);
 }
 
+void *routine_monitor_continue(t_prog_args *data, int i, int all_eaten)
+{
+    if (data->num_times_to_eat != -1)
+    {
+        while (i < data->number_of_philosophers)
+        {
+            pthread_mutex_lock(&data->meal_eaten);
+            if (data->philos[i]->meals_eaten < data->num_times_to_eat)
+            {
+                all_eaten = 0;
+                pthread_mutex_unlock(&data->meal_eaten);
+                break;
+            }
+            pthread_mutex_unlock(&data->meal_eaten);
+            i++;
+        }
+        if (all_eaten)
+        {
+            pthread_mutex_lock(&data->lock_check_simulation);
+            data->is_simuation_ended = 1;
+            pthread_mutex_unlock(&data->lock_check_simulation);
+            return (NULL);
+        }
+    }
+    usleep(50);
+    return ((void *)NULL);
+}
+
 void *routine_monitor(t_prog_args *data)
 {
-    int all_eaten;
+    void *return_;
     int i;
 
+    return_ = NULL;
     while (!is_simulation_end(data))
     {
         i = 0;
@@ -152,31 +186,7 @@ void *routine_monitor(t_prog_args *data)
             pthread_mutex_unlock(&data->last_meal_time_);
             i++;
         }
-        i = 0;
-        all_eaten = 1;
-        if (data->num_times_to_eat != -1)
-        {
-            while (i < data->number_of_philosophers)
-            {
-                pthread_mutex_lock(&data->meal_eaten);
-                if (data->philos[i]->meals_eaten < data->num_times_to_eat)
-                {
-                    all_eaten = 0;
-                    pthread_mutex_unlock(&data->meal_eaten);
-                    break;
-                }
-                pthread_mutex_unlock(&data->meal_eaten);
-                i++;
-            }
-            if (all_eaten)
-            {
-                pthread_mutex_lock(&data->lock_check_simulation);
-                data->is_simuation_ended = 1;
-                pthread_mutex_unlock(&data->lock_check_simulation);
-                return (NULL);
-            }
-        }
-        usleep(50);
+        return_ = routine_monitor_continue(data, 0, 1);
     }
     return (NULL);
 }
