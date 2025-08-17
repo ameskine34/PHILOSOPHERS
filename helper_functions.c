@@ -6,15 +6,15 @@
 /*   By: ameskine <ameskine@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 09:42:15 by ameskine          #+#    #+#             */
-/*   Updated: 2025/08/17 01:30:02 by ameskine         ###   ########.fr       */
+/*   Updated: 2025/08/18 00:08:50 by ameskine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int ft_strlen(char *str)
+int	ft_strlen(char *str)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (str[i])
@@ -22,9 +22,9 @@ int ft_strlen(char *str)
 	return (i);
 }
 
-static int get_sign(char *str, int *i, int *error)
+static int	get_sign(char *str, int *i, int *error)
 {
-	int sign;
+	int	sign;
 
 	sign = 1;
 	if (str[*i] == '-' || str[*i] == '+')
@@ -36,17 +36,17 @@ static int get_sign(char *str, int *i, int *error)
 	return (sign);
 }
 
-static void skip_whitespace(char *str, int *i)
+static void	skip_whitespace(char *str, int *i)
 {
 	while ((str[*i] >= 9 && str[*i] <= 13) || str[*i] == 32)
 		(*i)++;
 }
 
-long ft_atol(char *str)
+long	ft_atol(char *str)
 {
-	long res;
+	long	res;
 
-	int(i), (sign), (digit), (error);
+	int (i), (sign), (digit), (error);
 	(1) && (i = 0, error = 0);
 	res = 0;
 	skip_whitespace(str, &i);
