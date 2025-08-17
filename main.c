@@ -6,7 +6,7 @@
 /*   By: ameskine <ameskine@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/20 23:40:43 by ameskine          #+#    #+#             */
-/*   Updated: 2025/08/17 23:33:26 by ameskine         ###   ########.fr       */
+/*   Updated: 2025/08/17 23:59:22 by ameskine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@ void print_status(t_philo_info *philo, char *status)
     pthread_mutex_lock(&philo->init->lock_check_simulation);
     if (philo->init->is_simuation_ended)
     {
-        pthread_mutex_unlock(&philo->init->lock_check_simulation);  
-        return ;
+        pthread_mutex_unlock(&philo->init->lock_check_simulation);
+        return;
     }
     long current = current_time() - philo->init->start_time;
     printf("%ld %d %s\n", current, philo->philo_num, status);
@@ -33,7 +33,7 @@ t_philo_info **philos_data_filling(t_prog_args *init)
     j = 0;
     philo_infos = malloc((init->number_of_philosophers + 1) * sizeof(t_philo_info *));
     if (!philo_infos)
-        return (NULL); 
+        return (NULL);
     while (j < init->number_of_philosophers)
     {
         philo_infos[j] = malloc(sizeof(t_philo_info));
@@ -60,8 +60,8 @@ void *init_p_args_continue(int *ac, char **av, t_prog_args *init, int i)
 {
     if (*ac == 6)
     {
-        if((init->num_times_to_eat = ft_atol(av[5])) == -1 || (init->num_times_to_eat == 0 ))
-        return (free(init),NULL);
+        if ((init->num_times_to_eat = ft_atol(av[5])) == -1 || (init->num_times_to_eat == 0))
+            return (free(init), NULL);
     }
     else
         init->num_times_to_eat = -1;
@@ -93,13 +93,13 @@ t_prog_args *init_p_args(int *ac, char **av)
     pthread_mutex_init(&init->meal_eaten, NULL);
     pthread_mutex_init(&init->last_meal_time_, NULL);
     if ((init->number_of_philosophers = ft_atol(av[1])) == -1 || (init->number_of_philosophers == 0))
-        return (free(init),NULL);
+        return (free(init), NULL);
     if ((init->time_to_sleep = ft_atol(av[4])) == -1 || (init->time_to_sleep == 0))
-        return (free(init),NULL);
-    if ((init->time_to_die = ft_atol(av[2])) == -1 || (init->time_to_die == 0 ))
-        return (free(init),NULL);
-    if ((init->time_to_eat = ft_atol(av[3])) == -1 || (init->time_to_eat == 0 ))
-        return (free(init),NULL);
+        return (free(init), NULL);
+    if ((init->time_to_die = ft_atol(av[2])) == -1 || (init->time_to_die == 0))
+        return (free(init), NULL);
+    if ((init->time_to_eat = ft_atol(av[3])) == -1 || (init->time_to_eat == 0))
+        return (free(init), NULL);
     init_ = init_p_args_continue(ac, av, init, 0);
     return (init_);
 }
@@ -110,13 +110,13 @@ void philo_eating(t_philo_info *philo)
     print_status(philo, "has taken a fork");
     pthread_mutex_lock(&philo->init->fork_[philo->left_fork]->fork);
     print_status(philo, "has taken a fork");
-    pthread_mutex_lock(&philo->init->last_meal_time_);    
+    pthread_mutex_lock(&philo->init->last_meal_time_);
     philo->last_meal_time = current_time();
-    pthread_mutex_unlock(&philo->init->last_meal_time_);    
+    pthread_mutex_unlock(&philo->init->last_meal_time_);
     print_status(philo, "is eating");
     if (philo->init->time_to_eat >= philo->init->time_to_die)
         usleep(philo->init->time_to_die * 1000);
-    else 
+    else
         usleep(philo->init->time_to_eat * 1000);
     pthread_mutex_lock(&philo->init->meal_eaten);
     philo->meals_eaten++;
@@ -159,7 +159,7 @@ void *routine_monitor_continue(t_prog_args *data, int i, int all_eaten)
         }
     }
     usleep(50);
-    return ((void *)NULL);
+    return (NULL);
 }
 
 void *routine_monitor(t_prog_args *data)
@@ -173,7 +173,7 @@ void *routine_monitor(t_prog_args *data)
         i = 0;
         while (i < data->number_of_philosophers)
         {
-            pthread_mutex_lock(&data->last_meal_time_);    
+            pthread_mutex_lock(&data->last_meal_time_);
             if ((current_time() - data->philos[i]->last_meal_time) >= data->time_to_die)
             {
                 print_status(data->philos[i], "died");
@@ -203,31 +203,26 @@ void *start_routine(void *arg)
         if (philo->init->number_of_philosophers == 1)
         {
             printf("%ld %d has taken a fork\n", current_time() - philo->init->start_time, philo->philo_num);
-            usleep(philo->init->time_to_die * 1000);
-            return (NULL);
+            return (usleep(philo->init->time_to_die * 1000), NULL);
         }
-        philo_eating(philo);
-        print_status(philo, "is sleeping");
+        (void)((1) && (philo_eating(philo), print_status(philo, "is sleeping"), 1));
         if (philo->init->time_to_sleep >= philo->init->time_to_die)
-            usleep(philo->init->time_to_die * 1000);            
+            usleep(philo->init->time_to_die * 1000);
         else
             usleep(philo->init->time_to_sleep * 1000);
         print_status(philo, "is thinking");
         if ((philo->init->number_of_philosophers % 2 != 0) && (philo->philo_num % 2 != 0))
-        {
-            usleep(2000);
-            if (philo->init->time_to_eat > philo->init->time_to_sleep)
+            if (usleep(2000) && philo->init->time_to_eat > philo->init->time_to_sleep)
                 usleep((philo->init->time_to_eat - philo->init->time_to_sleep) * 1000);
-        }
     }
     return (NULL);
 }
 
-int    philos_creation(t_prog_args *data)
+int philos_creation(t_prog_args *data)
 {
     int n_of_philo;
     int j;
-    
+
     j = 0;
     n_of_philo = data->number_of_philosophers;
     while (j < n_of_philo)
@@ -245,7 +240,7 @@ int    philos_creation(t_prog_args *data)
     return (0);
 }
 
-long    current_time(void)
+long current_time(void)
 {
     struct timeval tp;
 
@@ -257,12 +252,12 @@ long    current_time(void)
 void error_printing(int i)
 {
     if (i == SYNTAX_ERROR)
-        write (1,ERROR_SYNTAX,ft_strlen(ERROR_SYNTAX));
+        write(1, ERROR_SYNTAX, ft_strlen(ERROR_SYNTAX));
     else if (i == INVALID_ARG)
         write(1, "ERROR : invalid arg\n", 20);
 }
 
-void    cleanup(t_philo_info **philo_infos, t_prog_args *init)
+void cleanup(t_philo_info **philo_infos, t_prog_args *init)
 {
     int i;
 
@@ -274,11 +269,10 @@ void    cleanup(t_philo_info **philo_infos, t_prog_args *init)
         free(philo_infos[i]);
         i++;
     }
-    free(init->fork_);    
+    free(init->fork_);
     free(philo_infos);
-	free(init);
+    free(init);
 }
-
 
 int main(int ac, char **av)
 {
@@ -288,13 +282,13 @@ int main(int ac, char **av)
     init = NULL;
     philo_init = NULL;
     if (ac < 5 || ac > 6)
-        return (error_printing(SYNTAX_ERROR),1);
+        return (error_printing(SYNTAX_ERROR), 1);
     init = init_p_args(&ac, av);
     if (!init)
-        return (error_printing(INVALID_ARG),1);
+        return (error_printing(INVALID_ARG), 1);
     philo_init = philos_data_filling(init);
     if (philo_init == NULL)
-        return (free(init) ,1);
+        return (free(init), 1);
     init->philos = philo_init;
     if (philos_creation(init) == -1)
         return (cleanup(philo_init, init), 1);
