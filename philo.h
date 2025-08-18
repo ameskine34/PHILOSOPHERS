@@ -6,7 +6,7 @@
 /*   By: ameskine <ameskine@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/20 14:00:26 by ameskine          #+#    #+#             */
-/*   Updated: 2025/08/18 00:26:59 by ameskine         ###   ########.fr       */
+/*   Updated: 2025/08/18 15:46:52 by ameskine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ typedef struct prog_args
 	pthread_mutex_t			lock_check_simulation;
 	pthread_mutex_t			last_meal_time_;
 	pthread_mutex_t			meal_eaten;
+	pthread_mutex_t			print_mutex;
 }							t_prog_args;
 
 typedef struct philo_info
@@ -62,12 +63,26 @@ typedef struct philo_info
 	int						left_fork;
 }							t_philo_info;
 
+void						*init_p_args_continue(int *ac, char **av,
+								t_prog_args *init, int i);
 void						print_status(t_philo_info *philo, char *status);
 t_philo_info				**philos_data_filling(t_prog_args *init);
-t_prog_args					*init_p_args(int *ac, char **av);
 void						philo_eating(t_philo_info *philo);
+t_prog_args					*init_p_args(int *ac, char **av);
+t_prog_args					*init_p_args(int *ac, char **av);
 long						current_time(void);
 int							ft_strlen(char *str);
 long						ft_atol(char *str);
+long						current_time(void);
+void						*start_routine(void *arg);
+void						*routine_monitor(t_prog_args *data);
+void						*routine_monitor_continue(t_prog_args *data, int i,
+								int all_eaten);
+int							is_simulation_end(t_prog_args *data);
+void						philo_eating(t_philo_info *philo);
+void						error_printing(int i);
+void						cleanup(t_philo_info **philo_infos,
+								t_prog_args *init);
+int							is_simulation_end(t_prog_args *data);
 
 #endif

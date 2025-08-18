@@ -6,7 +6,7 @@
 /*   By: ameskine <ameskine@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 09:42:15 by ameskine          #+#    #+#             */
-/*   Updated: 2025/08/18 00:08:50 by ameskine         ###   ########.fr       */
+/*   Updated: 2025/08/18 14:56:01 by ameskine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,4 +69,14 @@ long	ft_atol(char *str)
 	if (error == 1)
 		return (-1);
 	return ((res * sign));
+}
+
+long	current_time(void)
+{
+	struct timeval	tp;
+	long			total_time;
+
+	gettimeofday(&tp, NULL);
+	total_time = (tp.tv_sec * 1000) + (tp.tv_usec / 1000);
+	return (total_time);
 }
