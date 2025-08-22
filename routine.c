@@ -6,7 +6,7 @@
 /*   By: ameskine <ameskine@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 14:58:20 by ameskine          #+#    #+#             */
-/*   Updated: 2025/08/18 15:53:07 by ameskine         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:39:24 by ameskine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,9 +66,9 @@ void	*routine_monitor(t_prog_args *data)
 	void	*return_;
 	int		i;
 
-	return_ = NULL;
 	while (!is_simulation_end(data))
 	{
+		return_ = NULL;
 		i = -1;
 		while (++i < data->number_of_philosophers)
 		{
@@ -109,7 +109,7 @@ void	*start_routine(void *arg)
 
 	philo = (t_philo_info *)arg;
 	if (philo->philo_num % 2 != 0)
-		usleep(1000);
+		usleep(2000);
 	while (!is_simulation_end(philo->init))
 	{
 		one_philo_case(philo);
